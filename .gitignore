@@ -7,3 +7,4 @@ web/dist/
 *.log
 cookies.txt
 data/audio/
+data/shared-cookies.txt

@@ -44,6 +44,14 @@ npm install
 node src/index.js
 ```
 
+Variables d'environnement optionnelles (voir `.env.example`) :
+
+| Variable | Rôle | Défaut |
+|---|---|---|
+| `PORT` / `HOST` | Écoute de l'API et du dashboard | `3001` / `127.0.0.1` |
+| `YTDLP_BROWSER_CDP` | Endpoint CDP d'un navigateur pour exporter les cookies YouTube | `http://127.0.0.1:9222` |
+| `YTDLP_SHARED_COOKIES` | Fichier de cookies Netscape de secours (par ex. rafraîchi par un script externe) ; ignoré s'il est absent ou vide | `data/shared-cookies.txt` |
+
 Le dashboard est servi par la même API (port 3001 par défaut). **Ne l'exposez pas sur Internet public** : gardez-le sur loopback ou derrière un VPN (Tailscale).
 
 ### Dashboard
@@ -58,6 +66,18 @@ Le build est servi par l'API. Pour le développement : `npm run dev` (Vite, prox
 
 Si YouTube bloque les streams depuis votre serveur (403), faites tourner un fournisseur de tokens POT, par exemple le conteneur `brainicism/bgutil-ytdlp-pot-provider` — yt-dlp le détecte automatiquement (voir `.env.example`).
 
+## Déploiement (systemd)
+
+```bash
+sudo useradd --system --home /opt/bardbot --shell /usr/sbin/nologin bardbot
+sudo git clone https://github.com/superyaya44/bardbot /opt/bardbot
+cd /opt/bardbot && sudo cp .env.example .env   # puis renseigner .env
+sudo npm install && (cd web && sudo npm install && sudo npm run build)
+sudo chown -R bardbot:bardbot /opt/bardbot
+sudo cp deploy/bardbot.service /etc/systemd/system/
+sudo systemctl daemon-reload && sudo systemctl enable --now bardbot
+```
+
 ## Tests
 
 ```bash
@@ -66,4 +86,4 @@ node --test test/
 
 ## Licence
 
-Usage perso — libre de vous en inspirer.
+Licence : MIT (voir [LICENSE](LICENSE)).

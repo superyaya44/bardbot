@@ -6,18 +6,18 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const COOKIES = path.join(__dirname, '..', 'data', 'cookies.txt');
 const AUDIO_DIR = path.join(__dirname, '..', 'data', 'audio');
-// Profil Chromium persistant (lecture DB directe par yt-dlp) : ABANDONNÉ le
-// 18/09 — yt-dlp lisait Profile 1 (sans session) pendant que la session vit
-// dans Default, et Chromium ne flushe pas ses cookies en DB. Source de vérité :
-// cookies.txt exporté via CDP (voir cdp-cookies.js), fallback = fichier
-// partagé maintenu par le pipeline Camoufox (~/.hermes/scripts/refresh_google_cookies.py).
-const BROWSER_PROFILE = process.env.YTDLP_BROWSER_PROFILE || '/home/ubuntu/.hermes/browser-profiles/sam';
-const SHARED_COOKIES = process.env.YTDLP_SHARED_COOKIES || '/home/ubuntu/.hermes/youtube-cookies-ytdlp.txt';
+// Source des cookies YouTube (ordre de priorité) :
+//  1. data/cookies.txt, exporté via CDP (voir cdp-cookies.js) ;
+//  2. YTDLP_SHARED_COOKIES : fichier cookies Netscape optionnel, par ex. maintenu
+//     par un script externe qui rafraîchit les cookies YouTube
+//     (défaut : data/shared-cookies.txt, ignoré s'il est absent ou vide) ;
+//  3. aucun cookie.
+const SHARED_COOKIES = process.env.YTDLP_SHARED_COOKIES || path.join(__dirname, '..', 'data', 'shared-cookies.txt');
 const hasCookies = (f = COOKIES) => { try { return fs.statSync(f).size > 100; } catch { return false; } };
 export const cookieArgs = () => (hasCookies()
   ? ['--cookies', COOKIES]
   : hasCookies(SHARED_COOKIES) ? ['--cookies', SHARED_COOKIES] : []);
-export const cookieSource = () => (hasCookies() ? 'fichier (CDP export)' : hasCookies(SHARED_COOKIES) ? 'fichier partagé (Camoufox)' : 'aucune');
+export const cookieSource = () => (hasCookies() ? 'fichier (CDP export)' : hasCookies(SHARED_COOKIES) ? 'fichier partagé' : 'aucune');
 fs.mkdirSync(AUDIO_DIR, { recursive: true });
 
 // Résout une URL/recherche en métadonnées (sans télécharger)

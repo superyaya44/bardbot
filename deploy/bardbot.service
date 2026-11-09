@@ -5,15 +5,17 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-WorkingDirectory=/home/ubuntu/.hermes/profiles/sam/home/bardbot
+# Créer un utilisateur dédié : sudo useradd --system --home /opt/bardbot --shell /usr/sbin/nologin bardbot
+User=bardbot
+WorkingDirectory=/opt/bardbot
 ExecStart=/usr/bin/env node src/index.js
 Restart=on-failure
 RestartSec=10
 Environment=NODE_ENV=production
-Environment=PATH=/home/ubuntu/.hermes/profiles/sam/home/.local/bin:/home/ubuntu/.npm-global/bin:/usr/local/bin:/usr/bin:/bin
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
 # Durcir un peu
 NoNewPrivileges=true
 PrivateTmp=true
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
