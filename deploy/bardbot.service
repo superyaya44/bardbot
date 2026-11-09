@@ -1,0 +1,19 @@
+[Unit]
+Description=Bardbot — bot Discord musique D&D (dashboard + lecture)
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/ubuntu/.hermes/profiles/sam/home/bardbot
+ExecStart=/usr/bin/env node src/index.js
+Restart=on-failure
+RestartSec=10
+Environment=NODE_ENV=production
+Environment=PATH=/home/ubuntu/.hermes/profiles/sam/home/.local/bin:/home/ubuntu/.npm-global/bin:/usr/local/bin:/usr/bin:/bin
+# Durcir un peu
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target

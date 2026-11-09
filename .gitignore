@@ -1,0 +1,9 @@
+node_modules/
+.env
+data/*.db
+data/*.db-*
+web/node_modules/
+web/dist/
+*.log
+cookies.txt
+data/audio/
